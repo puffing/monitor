@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <script src="https://sysydev.oss-cn-zhangjiakou.aliyuncs.com/ccmonitor/ccmonitor.umd.min.js"></script>
+    <!--<script>
+    	window.ccm_config={
+				appCd:'yourAppCode'
+			}
+    	
+    	ccmonitor.default.install({
+    		apiBaseUrl:'',//接口根地址
+    		api:{
+    			event:'/d',//事件监控接口
+    			visit:'/v',//浏览记录监控接口
+    			jsError:'j'//js报错监控接口
+    		},
+    		open:{
+    			event:true,//开启事件监控
+    			visit:true,//开启浏览监控
+    			jsError:true//开启Js 报错监控
+    		}
+    	})
+    </script>-->
+  </head>
+  <body>
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
