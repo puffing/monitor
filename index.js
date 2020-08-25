@@ -4,11 +4,7 @@ import onJsError from './src/onJsError.js'
 import packageJson from './package.json'
 let timeObj=''
 let cm_run_installed=false
-let info={
-	brower:'',
-	platform:'',
-	device:''
-}
+
 class Cc_monitor {
 	constructor(config) {
 		this.limit=config.limit||10 //超过限制将发送请求
@@ -19,6 +15,7 @@ class Cc_monitor {
 		this.registered={}
 		this.errorNum=0
 		this.coordinate=''
+		this.info={}
 		
 	}
 	usePagehideSend(cb){
@@ -85,10 +82,10 @@ class Cc_monitor {
 			appCd:CCM_config.appCd,
 			loginName:CCM_config.loginName,
 			uId:this.getUid(),
-
-			brower:info.brower?info.brower.appname+' '+info.brower.version:'',
-			platform:info.platform,
-			device:info.device
+			createTime:tool.dateFormat(new Date()),
+			brower:this.info.brower?this.info.brower.appname+' '+this.info.brower.version:'',
+			platform:this.info.platform,
+			device:this.info.device
 		}
 		if(code!='jsError'){
 			data['coordinate']=CCM_config.coordinate||this.coordinate
@@ -329,26 +326,8 @@ class Cc_monitor {
 }
 const cm_run=(op)=>{
 	if(cm_run_installed) return	
-
-	info.device=tool.getDevice().device
-	info.brower=tool.getBrower()
-	info.platform=tool.getPlatform().platform
 	
-	window['ccm']=new Cc_monitor({
-		limit:10,
-		max:40,
-		errorNumLimit:50,
-		apiBaseUrl:op&&op.apiBaseUrl?op.apiBaseUrl:'/api',
-		waitLoginName:op&&op.waitLoginName?op.waitLoginName:false//等待有LoginName时触发
-	})
-	
-	try{
-		tool.getCoordinate((res)=>{
-			window['ccm'].coordinate=res
-		})
-	}catch(e){
-		console.log(e)
-	}
+	const getCoordinate=op&&'getCoordinate' in op?op['getCoordinate']:false
 	const open=op&&op.open?op.open:{
 		'event':true,
 		'visit':true,
@@ -359,6 +338,25 @@ const cm_run=(op)=>{
 		'visit':op&&op.api&&op.api.event?op.api.visit:'/s_statistics/addVisit',
 		'jsError':op&&op.api&&op.api.event?op.api.jsError:'/s_statistics/addErrorJs'
 	}
+	
+	window['ccm']=new Cc_monitor({
+		limit:10,
+		max:40,
+		errorNumLimit:50,
+		apiBaseUrl:op&&op.apiBaseUrl?op.apiBaseUrl:'/api',
+		waitLoginName:op&&op.waitLoginName?op.waitLoginName:false//等待有LoginName时触发
+	})
+	window['ccm'].info.device=tool.getDevice().device
+	window['ccm'].info.brower=tool.getBrower()
+	window['ccm'].info.platform=tool.getPlatform().platform
+	try{
+		getCoordinate&&tool.getCoordinate((res)=>{
+			window['ccm'].coordinate=res
+		})
+	}catch(e){
+		console.log(e)
+	}
+	
 	open.event&&window['ccm'].register('event',apiPath.event)
 	open.visit&&window['ccm'].register('visit',apiPath.visit)
 	open.jsError&&window['ccm'].register('jsError',apiPath.jsError)
